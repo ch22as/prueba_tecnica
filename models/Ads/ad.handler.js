@@ -8,7 +8,7 @@ module.exports = {
     },
     
     list: async () => {
-        const adList = await Ad.find({}).lean();
+        const adList = await Ad.find({}).sort({'date': -1}).lean();
         return adList;
     },
     

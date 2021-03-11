@@ -1,6 +1,6 @@
 'use strict';
 
-const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate } = require('./ad.functions');
+const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation} = require('./ad.functions');
 const {add, list, remove} = require('./ad.handler');
 
 let error = {};
@@ -52,5 +52,21 @@ module.exports = {
         remove(req.params.id);
         res.redirect('/')
     },
+
+    removeByDate: (req, res) =>{
+        const day = req.body.day;
+        const month = req.body.month;
+        const year = req.body.year ;
+
+        const dateValidation = dateToRemoveValidation(day, month, year);
+        error = {};
+
+        if(dateToRemoveValidation){
+            error.add={e: "No valid date"};
+            res.redirect('/');
+            return;
+        }
+
+    }
     
 };
