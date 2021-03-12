@@ -12,5 +12,7 @@ module.exports = {
         return adList;
     },
     
-    remove: async (id) => await Ad.findByIdAndDelete({_id:id})
+    remove: async (id) => await Ad.findByIdAndDelete({_id:id}),
+
+    findById: async id => await Ad.findById(id).lean()
 };

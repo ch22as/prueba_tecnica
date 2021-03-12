@@ -1,7 +1,7 @@
 'use strict';
 
 const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation, selectByDate, deletedByIdArray, numberOfAdValiation} = require('./ad.functions');
-const {add, list, remove} = require('./ad.handler');
+const {add, list, remove, findById} = require('./ad.handler');
 
 let error = {};
 const adLimit = 10;
@@ -77,6 +77,13 @@ module.exports = {
 
         res.redirect('/');
 
+    },
+
+    detail: (req, res) =>{
+        findById(req.params.id).then(ad =>{
+            console.log(ad)
+            res.render('templates/detail',{ad})
+        });
     }
     
 };
