@@ -56,6 +56,11 @@ module.exports = {
     dateToRemoveValidation: (day, month, year) =>{
         return (day == /^[1-31]/ || month == /^[1-12]/ || year == /^[1900-3000]/ )?
         true:false;
+    },
+
+    numberOfAdValiation: (adList, limit) =>{
+        console.log(` length:${adList.length}`);
+        return adList.length >= limit? true:false;
     }
 
 };

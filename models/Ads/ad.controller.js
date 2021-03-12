@@ -1,10 +1,10 @@
 'use strict';
 
-const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation, selectByDate, deletedByIdArray} = require('./ad.functions');
+const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation, selectByDate, deletedByIdArray, numberOfAdValiation} = require('./ad.functions');
 const {add, list, remove} = require('./ad.handler');
 
 let error = {};
-
+const adLimit = 10;
 
 module.exports = {
     
@@ -17,34 +17,38 @@ module.exports = {
         .catch(error => res.send( error ));
     },
     
-    add: (req, res) =>{
+    add: async(req, res) =>{
         const title = req.body.title || '';
         const description = req.body.description || '';
         const date = dateFormater();
-
-        const titleDescriptionDefined = titleDescriptionValidate(title, description);
-        const equalInputs = inputsValidation(title, description);
-        const titleMaxLenghtValidation = titleLengthValidation(title);
+        const allAds = await list();
         
         error = {};
-        console.log(titleDescriptionDefined);
-        if(!titleDescriptionDefined){
+       
+        if(!titleDescriptionValidate(title, description)){
             error.add={e: "Title and description must be defined."};
             res.redirect('/');
             return;
         };
-        if(equalInputs){
+        if(inputsValidation(title, description)){
             error.add={e: "Title and description can´t be equals"};
             res.redirect('/');
             return;
         };
        
-        if(!titleMaxLenghtValidation){
+        if(!titleLengthValidation(title)){
             error.add={e: "Title max lenght 50 characters"};
             res.redirect('/');
             return;
         };
-        const allAds = list();
+
+        if(numberOfAdValiation(allAds, adLimit)){
+            
+            for(let i=(adLimit-1); i < allAds.length; i++){
+                remove(allAds[i]._id);
+            }
+        };
+
         add(title, description, date);
         res.redirect('/');
     },
