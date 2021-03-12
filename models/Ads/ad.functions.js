@@ -3,7 +3,7 @@
 const { list, remove } = require('./ad.handler');
 
 const allAd = list;
-const adToDelete = [];
+
 
 module.exports = {
     dateFormater: ()=>{
@@ -26,36 +26,37 @@ module.exports = {
         return title.length<=50? true:false;
     },
 
-    selectByDate: (year, month, day) =>{
-       
-        list.map((ad)=>{
-            if(ad.date.year < year) {
-                adToDelete.push(ad._id);
-                return
-            };
-            if(ad.date.year == year && ad.date.month < month) {
+    selectByDate: async ( year, month, day) =>{
+        let adToDelete = [];
+
+        const allAds = await list();
+        allAds.forEach(ad =>{   
+                if(ad.date.year < year) {
+                    adToDelete.push(ad._id);
+                    
+                    return
+                };
+                if(ad.date.year == year && ad.date.month < month) {
                 adToDelete.push(ad._id);
                 return;
-            };
-            if(ad.date.year == year && ad.date.month == month && ad.date.day < day){
+                };
+                if(ad.date.year == year && ad.date.month == month && ad.date.day < day){
                 adToDelete.push(ad._id)
-            };
-        });
+                };      
+            });
+        return adToDelete;           
     },
 
     deletedByIdArray: ( idArray ) =>{
-        for (const id of idArray) {
+       for(const id of idArray) {
             remove(id);
-        }
+        };
     },
 
-    dateToRemoveValidation: (day, moth, year) =>{
-        return (isNaN(day) || 1 > day > 31 || day.length()  || isNaN(month) || 1 > month > 31  
-        || isNaN(year) ||  > year > 3000)? true:false;
+    dateToRemoveValidation: (day, month, year) =>{
+        return (day == /^[1-31]/ || month == /^[1-12]/ || year == /^[1900-3000]/ )?
+        true:false;
     }
 
 };
-
-
-
 

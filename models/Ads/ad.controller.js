@@ -1,9 +1,10 @@
 'use strict';
 
-const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation} = require('./ad.functions');
+const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation, selectByDate, deletedByIdArray} = require('./ad.functions');
 const {add, list, remove} = require('./ad.handler');
 
 let error = {};
+
 
 module.exports = {
     
@@ -43,7 +44,7 @@ module.exports = {
             res.redirect('/');
             return;
         };
-        console.log("guardado")
+        const allAds = list();
         add(title, description, date);
         res.redirect('/');
     },
@@ -53,19 +54,24 @@ module.exports = {
         res.redirect('/')
     },
 
-    removeByDate: (req, res) =>{
+    removeByDate:  async (req, res) =>{
         const day = req.body.day;
         const month = req.body.month;
         const year = req.body.year ;
 
         const dateValidation = dateToRemoveValidation(day, month, year);
         error = {};
-
-        if(dateToRemoveValidation){
+        if(dateValidation){
             error.add={e: "No valid date"};
             res.redirect('/');
             return;
-        }
+        };
+
+        const adsToDelete = await selectByDate(year, month, day);
+        console.log(`Received: ${adsToDelete}`);
+        deletedByIdArray(adsToDelete);
+
+        res.redirect('/');
 
     }
     
