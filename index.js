@@ -7,10 +7,11 @@ const { Router } = require('express');
 const morgan = require('morgan');
 const exphbs = require('express-handlebars');
 const path = require('path');
-const { adRoutes } = require('./models/Ads')
+const { adRoutes } = require('./models/Ads');
+const {userRoutes } = require('./models/user');
 
 const app = express();
-const router = Router();
+// const router = Router();
 
 app.set('port', process.env.PORT || 4000);
 
@@ -28,6 +29,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use( adRoutes );
+app.use('/user', userRoutes)
 
 
 

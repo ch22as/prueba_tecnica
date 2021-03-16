@@ -1,20 +1,34 @@
 'use strict';
 
 const { dateFormater, inputsValidation, titleLengthValidation, titleDescriptionValidate, dateToRemoveValidation, selectByDate, deletedByIdArray, numberOfAdValiation} = require('./ad.functions');
-const {add, list, remove, findById} = require('./ad.handler');
+const {add, list, remove, findById, insertUserId} = require('./ad.handler');
+const {  listUsers, findOne, insertAdId } = require('../user');
 
 let error = {};
+let userData = {};
 const adLimit = 10;
 
 module.exports = {
     
-    createForm : (req, res) => {
+    createForm : async(req, res) => {
         list()
-        .then(adList =>  {          
-            res.render('templates/createForm',{ adList, error });
-            error = {};
-        })
-        .catch(error => res.send( error ));
+            .then(adList =>{
+                listUsers()
+                    .then(listUser =>{
+                        res.render('templates/createForm',{ adList, error, listUser});
+                        error = {};
+                    })
+                    .catch(error => res.send( error ));          
+                    })
+            .catch(error => res.send( error ));
+    },
+    form: async(req, res) =>{
+        const user = await findOne(req.params.userId);
+        userData = user;
+        const adList = await list();
+
+        res.render('templates/createForm',{ adList, error, user });
+        error = {};
     },
     
     add: async(req, res) =>{
@@ -79,11 +93,24 @@ module.exports = {
 
     },
 
-    detail: (req, res) =>{
-        findById(req.params.id).then(ad =>{
-            console.log(ad)
-            res.render('templates/detail',{ad})
-        });
+    detail: (req, res) => 
+    findById(req.params.id)
+        .then(ad =>res.render('templates/detail',{ad}
+        )
+        .catch(error =>{
+            error.add={e: `BBDD error: ${error}.`};
+            res.redirect('/')}
+        )
+    ),
+
+    favorite: async(req, res) =>{
+        const id = req.params.idAd; 
+        const userId = userData._id;
+        await insertAdId(userId, id);
+        await insertUserId(id, userId);
+        res.redirect(`/${userData._id}`)
+        const user = userData;
+        userData = user;
     }
     
 };

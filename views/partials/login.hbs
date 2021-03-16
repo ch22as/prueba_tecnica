@@ -1,0 +1,26 @@
+ {{#if listUser}}
+    <section class="login" id="login">
+    
+        <form class="login-form" method="POST" action="user/login">
+            <select name="user_id" id="login-form" >
+                {{#each listUser}}
+                    <option  value="{{_id}}">{{name}}</option>
+                {{/each}}
+            </select>
+            <button id="btn-login-select" >Login</button>
+        </form>
+        
+        <form class="login-form" action="user/create" method="POST">
+            <div>
+                <label for="name">Username:</label>
+                <input type="text" id="name" name="name">
+            </div>
+            <button id="btn-login">Create</button>
+        </form>
+    </section>
+ {{/if}}
+
+{{#if user}}
+    <h3>Bienvenido/a {{user.name}}</h3>
+    <button><a href="/">log out</a></button>
+{{/if}}
